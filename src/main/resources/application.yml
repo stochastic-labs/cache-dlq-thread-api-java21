@@ -1,0 +1,34 @@
+server:
+  port: ${SERVER_PORT:8083}
+
+spring:
+  application:
+    name: cache-dlq-thread-api-java21
+
+  threads:
+    virtual:
+      enabled: true
+
+  data:
+    mongodb:
+      uri: mongodb://${MONGO_USERNAME:root}:${MONGO_PASSWORD:root}@${MONGO_HOST:localhost}:${MONGO_PORT:27017}/stochastic_labs_db?authSource=admin
+
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 2000ms
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    listener:
+      simple:
+        executor: java.lang.concurrent.Executors.newVirtualThreadPerTaskExecutor
+
+app:
+  messaging:
+    input-queue: ${APP_RABBIT_QUEUE:stochastic-input-queue}
+    dlq-queue: ${APP_RABBIT_DLQ_QUEUE:stochastic-input-queue.DLQ}
+    ttl-ms: ${APP_RABBIT_TTL_MS:60000}

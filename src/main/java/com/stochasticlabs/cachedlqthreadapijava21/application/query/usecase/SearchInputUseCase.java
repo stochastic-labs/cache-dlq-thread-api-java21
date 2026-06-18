@@ -2,6 +2,7 @@ package com.stochasticlabs.cachedlqthreadapijava21.application.query.usecase;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stochasticlabs.cachedlqthreadapijava21.application.query.dto.InputResponseDTO;
+import com.stochasticlabs.cachedlqthreadapijava21.application.query.exceptions.ResourceNotFoundException;
 import com.stochasticlabs.cachedlqthreadapijava21.infrastructure.db.mongo.repository.ProcessedInputRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,7 @@ public class SearchInputUseCase {
         log.info("[cache-aside] CACHE MISS for key: {}. Search in MongoDB...", cacheKey);
         var entity = processedInputRepository.findByOriginalValue(originalValue).stream()
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("No record found for the value: " + originalValue));
+                .orElseThrow(() -> new ResourceNotFoundException("No record found for the value: " + originalValue));
 
         InputResponseDTO response = new InputResponseDTO(entity.getOriginalValue(), entity.getStochasticValueGenerated());
 
